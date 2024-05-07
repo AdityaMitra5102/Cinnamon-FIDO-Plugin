@@ -1,0 +1,24 @@
+#! /usr/bin/python3
+import os
+import sys
+
+user = sys.argv[1]
+service='''
+[Unit]
+Description=Cinnamon FIDO Plugin
+After=network.target
+
+[Service]
+User=$username
+ExecStart=cinnamonfidoplugin -l
+ExecReload=/bin/kill -s HUP $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+'''
+
+service=service.replace('$username', user)
+
+file=open("/etc/systemd/system/cinnamonfidoplugin.service", "w")
+file.write(service)
+file.close()

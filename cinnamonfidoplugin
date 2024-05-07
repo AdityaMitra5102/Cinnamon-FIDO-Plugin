@@ -1,0 +1,131 @@
+#! /usr/bin/python3
+
+from fido2.hid import CtapHidDevice
+from fido2.client import Fido2Client, WindowsClient, UserInteraction
+from fido2.server import Fido2Server
+import getpass
+import sys
+import ctypes
+import pickle
+import psutil
+import os
+
+# Handle user interaction
+class CliInteraction(UserInteraction):
+    def prompt_up(self):
+        print("\nTouch your authenticator device now...\n")
+
+    def request_pin(self, permissions, rd_id):
+        return getpass.getpass("Enter PIN: ")
+
+    def request_uv(self, permissions, rd_id):
+        print("User Verification required.")
+        return True
+
+
+def init_client_server():
+	global client
+	global server
+	global uv
+	
+	uv="discouraged"
+	dev = next(CtapHidDevice.list_devices(), None)
+	if dev is not None:
+		print("Use USB HID channel.")
+	else:
+		try:
+			from fido2.pcsc import CtapPcscDevice
+			dev = next(CtapPcscDevice.list_devices(), None)
+			print("Use NFC channel.")
+		except Exception as e:
+			print("NFC vvccchannel search error:", e)
+	if not dev:
+		print("No FIDO device found")
+		return
+	client = Fido2Client(dev, "https://example.com", user_interaction=CliInteraction())
+	server = Fido2Server({"id": "example.com", "name": "Cinnamon FIDO Plugin"}, attestation="direct")
+
+def get_credentials():
+	try:
+		uname=getpass.getuser()
+		file=f'/home/{uname}/.cinnamon-fido-plugin.cred'
+		with open(file,'rb') as fl:
+			credentials=pickle.load(fl)
+		return credentials
+	except:
+		return []
+
+def write_credentials(credentials={}):
+	try:
+		uname=getpass.getuser()
+		file=f'/home/{uname}/.cinnamon-fido-plugin.cred'
+		with open(file, 'wb') as fl:
+			pickle.dump(credentials, fl)
+	except Exception as e:
+		print(e)
+		pass
+
+def register_key(username):
+	global client
+	global server
+	init_client_server()
+	credentials=get_credentials()
+	user = {"id": username.encode(), "name": username}
+	create_options, state = server.register_begin(user, user_verification=uv, authenticator_attachment="cross-platform")
+	result = client.make_credential(create_options["publicKey"])
+	auth_data = server.register_complete(state, result.client_data, result.attestation_object)
+	usernamecred=base64.b64encode(username.encode()).decode()
+	cred=auth_data.credential_data
+	credentials.append(cred)
+	write_credentials(credentials=credentials)
+
+def authenticate():
+	global client
+	global server
+	init_client_server()
+	try:
+		credentials=get_credentials()
+		request_options, state = server.authenticate_begin(credentials, user_verification=uv)
+		result = client.get_assertion(request_options["publicKey"])
+		result = result.get_response(0)
+		
+		print(credentials)
+		server.authenticate_complete(state, credentials, result.credential_id, result.client_data, result.authenticator_data, result.signature,)
+		return True
+	except Exception as e:
+		print(e)
+		return False
+		
+def unlock():
+	if authenticate():
+		os.system('cinnamon-unlock-desktop')
+	
+def register():
+	username=getpass.getuser()
+	register_key(username)
+	
+def checkLocked():
+	process_name='cinnamon-screensaver'
+	for process in psutil.process_iter(['pid', 'name']):
+		if process.info['name'] == process_name:
+			return True
+	return False
+	
+def run():
+	while True:
+		user=getpass.getuser()
+		print(user)
+		if checkLocked():
+			unlock()
+			
+def handle_args():
+	argumentList=sys.argv[1:]
+	if '--register' in argumentList or '-r' in argumentList:
+		register()
+	elif '--lock' in argumentList or '-l' in argumentList:
+		run()
+	else:
+		print('Use --register or -r for Registering key, --lock or -l to run application')
+		
+if __name__=='__main__':
+	handle_args()
