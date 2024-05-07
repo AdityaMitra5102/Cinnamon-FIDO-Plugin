@@ -62,7 +62,6 @@ def write_credentials(credentials={}):
 		with open(file, 'wb') as fl:
 			pickle.dump(credentials, fl)
 	except Exception as e:
-		print(e)
 		pass
 
 def register_key(username):
@@ -88,12 +87,9 @@ def authenticate():
 		request_options, state = server.authenticate_begin(credentials, user_verification=uv)
 		result = client.get_assertion(request_options["publicKey"])
 		result = result.get_response(0)
-		
-		print(credentials)
 		server.authenticate_complete(state, credentials, result.credential_id, result.client_data, result.authenticator_data, result.signature,)
 		return True
 	except Exception as e:
-		print(e)
 		return False
 		
 def unlock():
@@ -113,8 +109,6 @@ def checkLocked():
 	
 def run():
 	while True:
-		user=getpass.getuser()
-		print(user)
 		if checkLocked():
 			unlock()
 			
