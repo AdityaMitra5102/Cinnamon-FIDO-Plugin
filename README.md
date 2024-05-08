@@ -28,6 +28,9 @@ Run the following to start enrollment:
 
 
 ## Demo Video
+### Trailer
+Video: [YT](https://youtu.be/wtwBQtihE3c)
+
 ### USB Connectivity
 Video: [YT](https://youtu.be/V96YnVgYWeo)
 
