@@ -5,7 +5,7 @@ Cinnamon Lock screen supports password based authentication
 
 This open source project, based on @Yubico/Python-FIDO2 brings the power of physical security keys (Over NFC and USB channels) to cinnamon lock screen.
 
-The user would be able to insert a Physical security key (Like Yubikey or Solokeys) into the USB port, or tap it on a compatible NFC Reader (that supports ISO7816 and PC/SC) to unlock the PC. Some laptops, like Microsoft Surface Go for Business may have an inbuilt NFC Reader that may also be supported. (I have not tested it on that machine.)
+The user would be able to insert a Physical security key (Like Yubikey or Solokeys) into the USB port, or tap it on a compatible NFC Reader (that supports ISO7816 and PC/SC) to unlock the PC. Some laptops, like Microsoft Surface Pro 10 for Business may have an inbuilt NFC Reader that may also be supported. (I have not tested it on that machine.)
 
 ## Supported NFC Readers
 I have tested the following NFC Readers to work
