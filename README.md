@@ -28,14 +28,8 @@ Run the following to start enrollment:
 
 
 ## Demo Video
-### Trailer
+
 Video: [YT](https://youtu.be/wtwBQtihE3c)
-
-### USB Connectivity
-Video: [YT](https://youtu.be/V96YnVgYWeo)
-
-### NFC Connectivity
-Video: [YT](https://youtu.be/4sN7daGqpNA)
 
 Note: I do not have a proper NFC Reader handy at the moment, hence the video uses an Android phone as a remote NFC Reader.
 
