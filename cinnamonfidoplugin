@@ -106,12 +106,20 @@ def checkLocked():
 		if process.info['name'] == process_name:
 			return True
 	return False
+
+import subprocess
+def checkLocked2():
+	try:
+		subprocess.check_call(['pgrep', '-x', 'cinnamon-screensaver'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+		return True
+	except subprocess.CalledProcessError:
+		return False
 	
 def run():
 	while True:
 		user=getpass.getuser()
 		print(user)
-		if checkLocked():
+		if checkLocked2():
 			unlock()
 			
 def handle_args():
