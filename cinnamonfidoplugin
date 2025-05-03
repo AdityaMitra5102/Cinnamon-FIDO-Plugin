@@ -110,7 +110,7 @@ def checkLocked():
 import subprocess
 def checkLocked2():
 	try:
-		subprocess.check_call(['pgrep', '-x', 'cinnamon-screensaver'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+		subprocess.check_call(['pgrep', '-fx', 'cinnamon-screensaver'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 		return True
 	except subprocess.CalledProcessError:
 		return False
