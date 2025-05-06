@@ -112,15 +112,17 @@ def checkLocked2():
 	try:
 		subprocess.check_call(['pgrep', '-fx', 'cinnamon-screensaver'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 		return True
-	except subprocess.CalledProcessError:
+	except:
 		return False
-	
+
+import time
 def run():
 	while True:
 		user=getpass.getuser()
 		print(user)
 		if checkLocked2():
 			unlock()
+		time.sleep(1)
 			
 def handle_args():
 	argumentList=sys.argv[1:]
